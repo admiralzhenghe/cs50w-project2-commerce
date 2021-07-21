@@ -1,0 +1,50 @@
+body {
+    padding: 10px;
+}
+
+.index-listing {
+    position: relative;
+    margin: auto;
+    height: 250px;
+    width: 250px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.index-listing img {
+    max-height: 100%;
+    max-width: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+.listing-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.listing-image {
+    display: flex;
+    height: 500px;
+    width: 500px;
+    border: 1px solid black;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.listing-image img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.create-container {
+    border: 1px solid black;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px 1px black;
+}

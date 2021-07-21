@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Inactive Listings{% endblock %}
+
+{% block body %}
+    <h2>Inactive Listings</h2>
+    <div class="row">
+        {% for listing in listings %}
+            {% if listing.status == "Closed" %}
+            
+                <div class="col-4 border rounded text-center pt-2 pb-2">
+                    <div class="index-listing">
+                        <a href="listing/{{ listing.pk }}">
+                            <img id='image' src="{{ listing.image }}" alt="{{ listing.title }}">
+                        </a>
+                    </div>
+                    <div class="index-text">
+    
+                        <a href="{% url 'listing' listing.id %}">
+                            <div>{{ listing.title }}</div>
+                        </a>
+                        <div>Condition: {{ listing.condition }}</div>
+                        <div>Price: ${{ listing.price }}</div>
+                        {% for bid in listing.bids.all %}
+                        <div>Sold for: ${{ bid.price }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

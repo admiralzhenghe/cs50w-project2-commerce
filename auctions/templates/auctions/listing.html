@@ -1,0 +1,110 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}{{ listing.title }}{% endblock %}
+
+{% block body %}
+
+    <div class="row listing-container">
+        <div class="col-6 listing-image">
+            <img src="{{ listing.image }}" alt="{{ listing.title }}">
+        </div>
+        <div class="col-4">
+            <h1>{{ listing.title }}</h1>
+            <div class="d-flex align-items-center">
+                <div>Listing status: <strong>{{ listing.status }}</strong></div>
+                    {% if listing.author == request.user and listing.status != "Closed" %}
+                        <div class="ml-auto">
+                            <form action="{% url 'status' listing.id %}" method="POST">
+                                {% csrf_token %}
+                                <button class="btn btn-warning" type="submit">End Listing</button>
+                            </form>
+                        </div>
+                    {% endif %}
+            </div>
+            <div>Category: <a href="{% url 'category' listing.category %}">{{ listing.category }}</a></div>   
+            <div>Condition: {{ listing.condition }}</div>
+                <div class="border rounded mt-2 mb-2 pt-4 pr-2 pb-4 pl-2">
+                    <div class="col-12">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                                <div class="alert alert-danger justify-content-center text-center" role="alert"> {{ message }} </div> 
+                                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                                <div class="alert alert-success text-center" role="alert"> {{ message }} </div> 
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div><strong>Starting price</strong>: ${{ listing.price }}</div>
+                    {% if bid %}
+                        <div class="mt-3"><strong>Highest Bid</strong>: {{ price }} by <strong>{{ bid.bidder }}</strong> on {{ bid.placed }}</div>
+                    {% endif %}
+                    {% if user.is_authenticated and listing.status == "Active" %}
+                        <form action="{% url 'bid' listing.id %}" method="POST"> <!-- Form to submit a bid -->
+                            {% csrf_token %}
+                            <div class="input-group mt-4">
+                                <span class="input-group-text">$</span>
+                                <input class="col-4 form-control" type="number" step=0.01 name="bid" required>
+                                <span><button class="btn btn-primary" type="submit">Place Bid</butotn></span>
+                            </div>
+                        </form>
+                    {% elif listing.status == "Closed" %}
+                        {% if not bid.bidder %}
+                            <h4>
+                                <div class="mt-3">This listing ended without any bids.</div>
+                            </h4>
+                        {% elif bid.bidder == request.user %}
+                            <h4>
+                                <div class="mt-3">Congratulations <strong>{{ bid.bidder }}</strong>!</div> 
+                                <div>You won this listing for ${{ bid.price }}.</div>
+                            </h4>
+                        {% else %}
+                            <h4>
+                                <div class="mt-3">Sold to <strong>{{ bid.bidder }}</strong> for ${{ bid.price }}.</div>
+                            </h4>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="mb-3">Description: {{ listing.description }}</div>
+                {% if user.is_authenticated %}
+                <form action="{% url 'add_remove' listing.id %}" method="POST">
+                    {% csrf_token %}
+                    {% if not match %}
+                        <button class="btn btn-success mb-3" type="submit" name="action" value="add">Add to Watchlist</button>
+                    {% else %}
+                        <button class="btn btn-danger mb-3" type="submit" name="action" value="remove">Remove from Watchlist</button>
+                    {% endif %}
+                </form>
+                {% endif %}
+            <div>Listing created: {{ listing.created }} by <strong>{{ listing.author }}</strong></div>    
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-10 border">
+            <h2>Comments:</h2>
+            <div class=" m-3">
+                {% if listing.comments.all %}
+                    {% for comment in listing.comments.all %}
+                        <div class="p-2" style="background-color: gainsboro; border-radius: 5px 5px 0 0;"> <strong>{{ comment.author }}</strong> - {{ comment.created }}</div>    
+                        <div class="p-2 mb-3" style="border: 1px solid gainsboro; border-radius: 0 0 5px 5px;">{{ comment.text }}</div>
+                    {% endfor %}
+                {% else %}
+                    <h5 style="text-align: center;">Be the first to leave a comment!</h5>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="">
+            <form action="{% url 'comment' listing.id %}" class="text-center mt-5" method="POST">
+                {% csrf_token %}
+                <h4 class="">Leave a comment:</h4>
+                <textarea class="form-control col-6 mx-auto" rows=8 name="comment" required></textarea>
+                <button class="btn btn-primary mt-2 mx-auto" type="submit">Submit</button>
+            </form>
+        </div>
+    {% endif %}
+
+{% endblock %}

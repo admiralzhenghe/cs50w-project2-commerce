@@ -1,0 +1,30 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}My Watchlist{% endblock %}
+
+{% block body %}
+    <h2>My Watchlist</h2>
+    {% if watching %}
+        {% for listing in watching %}
+            <div class="row border-top border-bottom border-secondary justify-content-center d-flex align-items-center mt-3 mb-3 p-3">
+                <div class="col-3 mr-4">
+                    <div style="height: 250px; width: 250px; border-radius: 10px;" class="border rounded d-flex justify-content-center align-items-center">
+                        <a href="{% url 'listing' listing.pk %}">
+                            <img style="max-height: 250px; max-width: 100%" src="{{ listing.image }}" alt="{{ listing.title }}">
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-3 ml-4">
+                        <a href="{% url 'listing' listing.pk %}">
+                            <div>{{ listing.title }}</div>
+                        </a>
+                        <div>Condition: {{ listing.condition }}</div>
+                        <div>Price: ${{ listing.price }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div> Empty...</div>
+    {% endif %}
+{% endblock %}
